@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Item } from "./item";
 
 @Injectable({
@@ -13,7 +13,6 @@ export class ItemService{
 
   async getItems() : Promise<Item[]> {
     const items = await fetch(this.apiUrl);
-    // set allItems to the items fetched from the server
     this.allItems = await items.json() ?? [];
     return this.allItems;
   }
@@ -47,7 +46,6 @@ export class ItemService{
   }
   
   async remove(item: Item) {
-    // remove item based on its id instead of the item itself
     await fetch(this.apiUrl+"/"+item.id, {
       method: "POST",
     });

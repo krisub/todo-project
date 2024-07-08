@@ -13,11 +13,9 @@ export class ItemsController {
 
     @Post()
     createItem(@Body() item_json : string): Item {
-        // get description from JSON body
         return this.itemsService.createItem(item_json["description"]);
     }
 
-    // delete based on id
     @Post(':id')
     deleteItem(@Param('id') id: string): Item {
         return this.itemsService.deleteItem(+id);

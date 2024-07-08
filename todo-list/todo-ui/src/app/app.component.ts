@@ -19,7 +19,6 @@ export class AppComponent implements OnInit, OnDestroy {
   subscription: Subscription;
 
   constructor(private router: Router) {
-    console.log("app component constructor")
     this.subscription = router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.browserRefresh = !router.navigated;
@@ -29,7 +28,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (!this.browserRefresh) {
-      console.log("app component ngOnInit")
       this.itemService.getItems();
     }
   }

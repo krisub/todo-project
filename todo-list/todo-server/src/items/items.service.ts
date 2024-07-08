@@ -18,10 +18,8 @@ export class ItemsService {
     }
 
     deleteItem(id: number): Item {
-        // this.items = this.items.filter(i => i !== item);
         const item = this.items.find(i => i.id === id);
         if (item === undefined) {
-            console.log("Item not found")
             return
         }
         this.items = this.items.filter(i => i.id !== id);
@@ -29,7 +27,6 @@ export class ItemsService {
     }
 
     updateItem(description: string, done: boolean, id: number): Item {
-        // find item from id
         const item = this.items.find(i => i.id === id);
         item.description = description;
         item.done = done;
