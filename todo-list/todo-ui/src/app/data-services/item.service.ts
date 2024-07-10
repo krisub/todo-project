@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { APIService } from './api.service';
-import { Item } from "./item";
+import { Item } from "../item";
 
 @Injectable({
   providedIn: 'root'
@@ -32,10 +32,10 @@ export class ItemService{
     this.getItems();
   }
 
-  async getCurrentId(): Promise<number> { 
-    const id = await this.apiService.get("/currentId");
-    return await id.json();
-  }
+  // async getCurrentId(): Promise<number> { 
+  //   const id = await this.apiService.get("/currentId");
+  //   return await id.json();
+  // }
   
   async remove(item: Item) {
     await this.apiService.post("/"+item.id, null);

@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ItemService } from "./item.service";
-import { Item } from "./item";
+import { ItemService } from "../../data-services/item.service";
+import { Item } from "../../item";
 import { FormGroup, FormControl, Validators, ReactiveFormsModule} from "@angular/forms";
 
 
@@ -44,13 +44,12 @@ export class ItemComponent {
     });
 
     this.itemForm.get('done')?.valueChanges.subscribe(done => {
-      this.item.done = done;
+      this.item.done = !this.item.done;
     });
   }
 
   async onSubmit() {
     this.editable = false;
-    // and update backend
     const updateItemDto = { id: this.item.id, description: this.item.description, done: this.item.done };
     await this.itemService.updateItem(updateItemDto);
   }
@@ -59,17 +58,6 @@ export class ItemComponent {
     this.editable = false;
     this.initializeForm(this.originalDescription, this.item.done);
   }
-
-  // saveItem(description: string) {
-  //   if (!description) return;
-  //   this.editable = false;
-  //   this.item.description = description;
-  //   this.itemService.updateItem(this.item, description, this.item.done); // await
-  // }
-
-  // changeDone() {
-  //   this.itemService.updateItem(this.item, this.item.description, !this.item.done);
-  // }
 
 }
 

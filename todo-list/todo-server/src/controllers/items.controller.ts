@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
-import { CreateItemDto } from './dto/create-item.dto';
-import { UpdateItemDto } from './dto/update-item.dto';
-import { ItemsService } from './items.service';
-import { Item } from './items.entity';
+import { CreateItemDto } from '../item-dtos/create-item.dto';
+import { UpdateItemDto } from '../item-dtos/update-item.dto';
+import { ItemsService } from '../services/items.service';
+import { Item } from '../entities/items.entity';
 
 @Controller('items')
 export class ItemsController {
@@ -33,9 +33,9 @@ export class ItemsController {
         this.itemsService.clearItems();
     }
 
-    @Get('currentId')
-    getCurrentId(): number {
-        return this.itemsService.getCurrentId();
-    }
+    // @Get('currentId')
+    // getCurrentId(): number {
+    //     return this.itemsService.getCurrentId();
+    // }
 
 }

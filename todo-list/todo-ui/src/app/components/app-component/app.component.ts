@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, OnDestroy } from "@angular/core";
 import { ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
-import { ItemComponent } from "./item/item.component";
-import { ItemService } from "./item/item.service";
+import { ItemComponent } from "../item-component/item.component";
+import { ItemService } from "../../data-services/item.service";
 import { Subscription } from "rxjs";
 import { NavigationStart, Router } from "@angular/router";
 
