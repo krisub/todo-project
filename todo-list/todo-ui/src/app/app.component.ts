@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, OnDestroy} from "@angular/core";
+import { Component, inject, OnInit, OnDestroy } from "@angular/core";
+import { ReactiveFormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 import { ItemComponent } from "./item/item.component";
 import { ItemService } from "./item/item.service";
@@ -10,7 +11,7 @@ import { NavigationStart, Router } from "@angular/router";
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  imports: [CommonModule, ItemComponent],
+  imports: [CommonModule, ItemComponent, ReactiveFormsModule],
 })
 export class AppComponent implements OnInit, OnDestroy {
   componentTitle = "to do list";

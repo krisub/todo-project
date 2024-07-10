@@ -1,4 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { CreateItemDto } from './dto/create-item.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 import { ItemsService } from './items.service';
 import { Item } from './items.entity';
 
@@ -12,18 +14,18 @@ export class ItemsController {
     }
 
     @Post()
-    createItem(@Body() item_json : string): Item {
-        return this.itemsService.createItem(item_json["description"]);
+    createItem(@Body() createItemDto : CreateItemDto): Item {
+        return this.itemsService.createItem(createItemDto);
+    }
+
+    @Put(':id')
+    updateItem(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto): Item {
+        return this.itemsService.updateItem(updateItemDto);
     }
 
     @Post(':id')
     deleteItem(@Param('id') id: string): Item {
         return this.itemsService.deleteItem(+id);
-    }
-
-    @Put(':id')
-    updateItem(@Param('id') id: string, @Body() item_json: string): Item {
-        return this.itemsService.updateItem(item_json["description"], item_json["done"], +id);
     }
     
     @Delete('clear')

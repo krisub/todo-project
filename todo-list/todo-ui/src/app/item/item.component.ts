@@ -1,13 +1,14 @@
-import { Component, Input, Output, EventEmitter, inject } from "@angular/core";
+import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ItemService } from "./item.service";
 import { Item } from "./item";
+import { FormGroup, FormControl, Validators, ReactiveFormsModule} from "@angular/forms";
 
 
 @Component({
   selector: 'app-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './item.component.html',
   styleUrl: './item.component.css'
 })
@@ -18,17 +19,57 @@ export class ItemComponent {
   @Input() item!: Item;
   @Output() remove = new EventEmitter<Item>();
   itemService: ItemService = inject(ItemService);
+  originalDescription = '';
 
-  saveItem(description: string) {
-    if (!description) return;
+  itemForm: FormGroup = new FormGroup({
+    description: new FormControl(''),
+    done: new FormControl(false)
+  });
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['item'] && this.item) {
+      this.originalDescription = this.item.description;
+      this.initializeForm(this.item.description, this.item.done);
+    }
+  }
+
+  initializeForm(desc: string, done: boolean) {
+    this.itemForm.setValue({
+      description: desc,
+      done: done
+    });
+
+    this.itemForm.get('description')?.valueChanges.subscribe(desc => {
+        this.item.description = desc;
+    });
+
+    this.itemForm.get('done')?.valueChanges.subscribe(done => {
+      this.item.done = done;
+    });
+  }
+
+  async onSubmit() {
     this.editable = false;
-    this.item.description = description;
-    this.itemService.updateItem(this.item, description, this.item.done);
+    // and update backend
+    const updateItemDto = { id: this.item.id, description: this.item.description, done: this.item.done };
+    await this.itemService.updateItem(updateItemDto);
   }
 
-  changeDone() {
-    this.itemService.updateItem(this.item, this.item.description, !this.item.done);
+  cancel() {
+    this.editable = false;
+    this.initializeForm(this.originalDescription, this.item.done);
   }
+
+  // saveItem(description: string) {
+  //   if (!description) return;
+  //   this.editable = false;
+  //   this.item.description = description;
+  //   this.itemService.updateItem(this.item, description, this.item.done); // await
+  // }
+
+  // changeDone() {
+  //   this.itemService.updateItem(this.item, this.item.description, !this.item.done);
+  // }
 
 }
 

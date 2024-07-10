@@ -1,5 +1,38 @@
 <div class="item">
-  <input
+  <form [formGroup]="itemForm">
+
+    <input
+      formControlName="done"
+      [id]="item.description"
+      type="checkbox"
+      (change)="onSubmit()"
+      [checked]="!item.done" />
+      
+    <label [for]="item.description">{{item.description}}</label>
+
+    <div class="btn-wrapper" *ngIf="!editable">
+      <button class="btn" (click)="editable = !editable">Edit</button>
+      <button class="btn btn-warn" (click)="remove.emit()">Delete</button>
+    </div>
+
+    <div *ngIf="editable">
+      <input
+        formControlName="description"
+        class="sm-text-input"
+        placeholder="edit item"
+        [value]="itemForm.get('description')"
+        #editedItem
+        (keyup.enter)="onSubmit()" />
+      <div class="btn-wrapper">
+        <button class="btn" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn btn-save" (click)="onSubmit()">
+          Save
+        </button>
+      </div>    
+    </div>
+
+  </form>
+  <!-- <input
     [id]="item.description"
     type="checkbox"
     (change)="changeDone()"
@@ -11,7 +44,7 @@
     <button class="btn btn-warn" (click)="remove.emit()">Delete</button>
   </div>
 
-  <div *ngIf="editable"> <!--if clcik edit-->
+  <div *ngIf="editable">
     <input
       class="sm-text-input"
       placeholder="edit item"
@@ -25,5 +58,5 @@
         Save
       </button>
     </div>
-  </div>
+  </div> -->
 </div>

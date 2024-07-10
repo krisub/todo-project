@@ -5,11 +5,11 @@
   <input
     #newItem
     placeholder="add an item"
-    (keyup.enter)="itemService.addItem(newItem.value); newItem.value = ''"
+    (keyup.enter)="itemService.addItem({description : newItem.value}); newItem.value = ''"
     class="lg-text-input"
     id="addItemInput" />
 
-  <button class="btn-primary" (click)="itemService.addItem(newItem.value)">Add</button>
+  <button class="btn-primary" (click)="itemService.addItem({description : newItem.value}); newItem.value = ''">Add</button>
 
   <div class="btn-wrapper">
     <button
