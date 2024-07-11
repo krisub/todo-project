@@ -32,10 +32,14 @@ export class ItemService{
     this.getItems();
   }
 
-  // async getCurrentId(): Promise<number> { 
+  // async getCurrentId(): Promise<number> {
   //   const id = await this.apiService.get("/currentId");
   //   return await id.json();
   // }
+
+  async getItem(item: Item) {
+    return await this.apiService.get("/"+item.id);
+  }
   
   async remove(item: Item) {
     await this.apiService.post("/"+item.id, null);

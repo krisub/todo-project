@@ -23,6 +23,11 @@ export class ItemsController {
         return this.itemsService.updateItem(updateItemDto);
     }
 
+    @Get(':id')
+    getItem(@Param('id') id: string): Item {
+        return this.itemsService.getItem(+id);
+    }
+
     @Post(':id')
     deleteItem(@Param('id') id: string): Item {
         return this.itemsService.deleteItem(+id);

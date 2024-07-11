@@ -22,10 +22,10 @@
         placeholder="edit item"
         [value]="itemForm.get('description')"
         #editedItem
-        (keyup.enter)="onSubmit()" />
+        (keyup.enter)="onSubmit(); this.editable=false" />
       <div class="btn-wrapper">
-        <button class="btn" (click)="cancel()">Cancel</button>
-        <button type="submit" class="btn btn-save" (click)="onSubmit()">
+        <button class="btn" (click)="cancel(); this.editable=false">Cancel</button>
+        <button type="submit" class="btn btn-save" (click)="onSubmit(); this.editable=false">
           Save
         </button>
       </div>    

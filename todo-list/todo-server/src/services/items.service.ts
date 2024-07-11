@@ -13,7 +13,10 @@ export class ItemsService {
     }
    
     createItem(createItemDto: CreateItemDto): Item {
-        const item: Item = { description: createItemDto.description, done: false, id: this.idCounter };
+        const item: Item = {
+            description: createItemDto.description,
+            done: false, id: this.idCounter, version: 0
+        };
         this.idCounter++;
         this.items.push(item);
         return item;
@@ -21,9 +24,20 @@ export class ItemsService {
 
     updateItem(updateItemDto: UpdateItemDto): Item {
         const item = this.items.find(i => i.id === updateItemDto.id);
-        item.description = updateItemDto.description;
-        item.done = updateItemDto.done;
+
+        if (item.version == updateItemDto.version) {
+            item.description = updateItemDto.description;
+            item.done = updateItemDto.done;
+            item.version++;
+        }
+        
+        updateItemDto.version = item.version;
+
         return item;
+    }
+
+    getItem(id: number): Item {
+        return this.items.find(i => i.id === id);
     }
 
     deleteItem(id: number): Item {
@@ -39,6 +53,7 @@ export class ItemsService {
         this.items = [];
         this.idCounter = 0;
     }
+
 
     // getCurrentId(): number {
     //     return this.idCounter;
