@@ -11,8 +11,11 @@ export class ItemsController {
     constructor(private readonly itemsService: ItemsService) { }
     
     @Get()
-    getAllItems(): Item[] {
-        return this.itemsService.getAllItems();
+    getAllItems(@Res() res: Response): void {
+        const items = this.itemsService.getAllItems();
+        const etagValue = etag(JSON.stringify(items));
+        res.setHeader('ETag', etagValue);
+        res.send(items);
     }
 
     @Post()
@@ -34,14 +37,15 @@ export class ItemsController {
         const existingItem = this.itemsService.getItem(+id);
 
         if (!existingItem) {
-            throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
+            throw new HttpException('Item not found', HttpStatus.NOT_FOUND); //404
         }
 
         const currentEtag = etag(JSON.stringify(existingItem));
+        console.log('backend etag in update:   ', currentEtag);
         
         if (ifMatch !== currentEtag) {
-            throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED);
-        }
+            throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED); //412
+        } //.CONFLICT 409
 
         const updatedItem = this.itemsService.updateItem(updateItemDto);
         const newEtag = etag(JSON.stringify(updatedItem));
@@ -62,6 +66,7 @@ export class ItemsController {
         }
 
         const etagValue = etag(JSON.stringify(item));
+        console.log('backend etag in get:   ', etagValue);
         res.setHeader('ETag', etagValue);
         res.send(item);
     }

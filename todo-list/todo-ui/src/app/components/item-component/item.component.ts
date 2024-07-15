@@ -49,7 +49,6 @@ export class ItemComponent {
   async onSubmit() {
     const updateItemDto = {
       id: this.item.id,
-      version: this.item.version,
       description: this.item.description,
       done: this.item.done
     };
