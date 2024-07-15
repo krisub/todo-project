@@ -15,23 +15,22 @@ export class ItemsService {
     createItem(createItemDto: CreateItemDto): Item {
         const item: Item = {
             description: createItemDto.description,
-            done: false, id: this.idCounter, version: 0
+            done: false, id: this.idCounter
         };
         this.idCounter++;
         this.items.push(item);
         return item;
     }
 
-    updateItem(updateItemDto: UpdateItemDto): Item {
+    updateItem(updateItemDto: UpdateItemDto): Item { // optimistic concurrency control
         const item = this.items.find(i => i.id === updateItemDto.id);
 
-        if (item.version == updateItemDto.version) {
-            item.description = updateItemDto.description;
-            item.done = updateItemDto.done;
-            item.version++;
+        if (item === undefined) {
+            return null;
         }
-        
-        updateItemDto.version = item.version;
+
+        item.description = updateItemDto.description;
+        item.done = updateItemDto.done;
 
         return item;
     }
@@ -42,9 +41,11 @@ export class ItemsService {
 
     deleteItem(id: number): Item {
         const item = this.items.find(i => i.id === id);
+        
         if (item === undefined) {
-            return
+            return null;
         }
+
         this.items = this.items.filter(i => i.id !== id);
         return item;
     }
