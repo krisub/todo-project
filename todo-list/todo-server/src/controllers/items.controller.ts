@@ -13,14 +13,15 @@ export class ItemsController {
     @Get()
     getAllItems(@Res() res: Response): void {
         const items = this.itemsService.getAllItems();
-        const etagValue = etag(JSON.stringify(items));
-        res.setHeader('ETag', etagValue);
+        res.setHeader('ETag', etag(JSON.stringify(items)));
         res.send(items);
     }
 
     @Post()
-    createItem(@Body() createItemDto : CreateItemDto): Item {
-        return this.itemsService.createItem(createItemDto);
+    createItem(@Body() createItemDto: CreateItemDto, @Res() res: Response): void {
+        const item = this.itemsService.createItem(createItemDto);
+        res.set('ETag', etag(JSON.stringify(item)));
+        res.json(item);
     }
 
     // @Put(':id')
@@ -28,29 +29,24 @@ export class ItemsController {
     //     return this.itemsService.updateItem(updateItemDto);
     // }
     @Put(':id')
-    updateItem(
-        @Param('id') id: string, 
-        @Body() updateItemDto: UpdateItemDto, 
-        @Headers('if-match') ifMatch: string, 
-        @Res() res: Response
-    ): void {
-        const existingItem = this.itemsService.getItem(+id);
-
-        if (!existingItem) {
-            throw new HttpException('Item not found', HttpStatus.NOT_FOUND); //404
+    updateItem(@Param('id') id: string,
+        @Body() updateItemDto: UpdateItemDto,
+        @Headers('If-Match') ifMatch: string,
+        @Res() res: Response): void {
+        
+        const item = this.itemsService.getItem(+id);
+        if (!item) {
+            throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
         }
 
-        const currentEtag = etag(JSON.stringify(existingItem));
-        console.log('backend etag in update:   ', currentEtag);
-        
+        const currentEtag = etag(JSON.stringify(item));
         if (ifMatch !== currentEtag) {
-            throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED); //412
-        } //.CONFLICT 409
+            throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED);
+        }
 
         const updatedItem = this.itemsService.updateItem(updateItemDto);
-        const newEtag = etag(JSON.stringify(updatedItem));
-        res.setHeader('ETag', newEtag);
-        res.send(updatedItem);
+        res.set('ETag', etag(JSON.stringify(updatedItem)));
+        res.json(updatedItem);
     }
 
     // @Get(':id')

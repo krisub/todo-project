@@ -23,8 +23,7 @@ export class ItemService{
   // }
 
   private updateEtagsForItem(headers: any, itemId: number) {
-    const etag = headers['etag-' + itemId];
-    console.log('etag:    ', etag);
+    const etag = headers['etag'];
     if (etag) {
       this.etagMap.set(itemId, etag);
     }
@@ -57,8 +56,8 @@ export class ItemService{
 
   async getItem(item: Item) {
     const response = await this.apiService.get("/" + item.id);
-    // console.log(response.headers.get('etag'));
-    // this.updateEtagsForItem(response.headers, item.id);
+    console.log(response.headers['etag']);
+    this.updateEtagsForItem(response.headers, item.id);
     return response.body;
   }
   
@@ -68,18 +67,26 @@ export class ItemService{
     this.etagMap.delete(item.id);
   }
 
+  // async updateItem(updateItemDto: any) {
+  //   const etag = this.etagMap.get(updateItemDto.id);
+  //   console.log('frontend etag:    ', etag);
+  //   if (etag) {
+  //     await this.apiService.put("/" + updateItemDto.id, updateItemDto, {
+  //       headers: { 'If-Match': etag }
+  //     });
+  //   } else {
+  //     await this.apiService.put("/" + updateItemDto.id, updateItemDto);
+  //   }
+  //   await this.getItems();
+
+  // }
+
   async updateItem(updateItemDto: any) {
     const etag = this.etagMap.get(updateItemDto.id);
     console.log('frontend etag:    ', etag);
-    if (etag) {
-      await this.apiService.put("/" + updateItemDto.id, updateItemDto, {
-        headers: { 'If-Match': etag }
-      });
-    } else {
-      await this.apiService.put("/" + updateItemDto.id, updateItemDto);
-    }
+    const customHeaders = etag ? { 'If-Match': etag } : {};
+    await this.apiService.put("/" + updateItemDto.id, updateItemDto, customHeaders);
     await this.getItems();
-
   }
 
   async clearItems(): Promise<Item[]> {

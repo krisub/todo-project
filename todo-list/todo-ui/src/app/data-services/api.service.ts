@@ -7,10 +7,10 @@ export class APIService {
   private apiUrl = "http://localhost:3000/items";
 
   async fetchData(url: string, method: string = 'GET', body: any = null, customHeaders: any = {}): Promise<any> {
-    const headers = {
+    const headers = new Headers({
       'Content-Type': 'application/json',
       ...customHeaders,
-    };
+    });
 
     const options: RequestInit = {
       method,
