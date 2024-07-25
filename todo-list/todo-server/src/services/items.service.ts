@@ -22,7 +22,7 @@ export class ItemsService {
         return item;
     }
 
-    updateItem(updateItemDto: UpdateItemDto): Item { // optimistic concurrency control
+    updateItem(updateItemDto: UpdateItemDto): Item {
         const item = this.items.find(i => i.id === updateItemDto.id);
 
         if (item === undefined) {

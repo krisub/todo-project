@@ -28,6 +28,7 @@ export class ItemsController {
     // updateItem(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto): Item {
     //     return this.itemsService.updateItem(updateItemDto);
     // }
+
     @Put(':id')
     updateItem(@Param('id') id: string,
         @Body() updateItemDto: UpdateItemDto,
@@ -40,6 +41,10 @@ export class ItemsController {
         }
 
         const currentEtag = etag(JSON.stringify(item));
+        console.log('item')
+        console.log(ifMatch);
+        console.log(currentEtag);
+        console.log('-----')
         if (ifMatch !== currentEtag) {
             throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED);
         }
@@ -62,7 +67,7 @@ export class ItemsController {
         }
 
         const etagValue = etag(JSON.stringify(item));
-        console.log('backend etag in get:   ', etagValue);
+        // console.log(etagValue);
         res.setHeader('ETag', etagValue);
         res.send(item);
     }

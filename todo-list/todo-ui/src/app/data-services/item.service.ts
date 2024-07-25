@@ -13,15 +13,6 @@ export class ItemService{
   apiService: APIService = inject(APIService);
   etagMap: Map<number, string> = new Map();
 
-  // private updateEtags(headers: any) {
-  //   this.allItems.forEach(item => {
-  //     const etag = headers['etag-' + item.id];
-  //     if (etag) {
-  //       this.etagMap.set(item.id, etag);
-  //     }
-  //   });
-  // }
-
   private updateEtagsForItem(headers: any, itemId: number) {
     const etag = headers['etag'];
     if (etag) {
@@ -32,10 +23,11 @@ export class ItemService{
   async getItems(): Promise<Item[]> {
     const response = await this.apiService.get("");
     this.allItems = response.body;
-    // call get item for each item in all items
+
     for (const item of this.allItems) {
       this.getItem(item);
     }
+
     return this.allItems;
   }
   
@@ -51,13 +43,13 @@ export class ItemService{
   async addItem(createItemDto: any) {
     if (!createItemDto.description) return;
     await this.apiService.post("", createItemDto);
-    this.getItems();
+    await this.getItems();
   }
 
   async getItem(item: Item) {
     const response = await this.apiService.get("/" + item.id);
-    console.log(response.headers['etag']);
     this.updateEtagsForItem(response.headers, item.id);
+      
     return response.body;
   }
   
@@ -67,23 +59,9 @@ export class ItemService{
     this.etagMap.delete(item.id);
   }
 
-  // async updateItem(updateItemDto: any) {
-  //   const etag = this.etagMap.get(updateItemDto.id);
-  //   console.log('frontend etag:    ', etag);
-  //   if (etag) {
-  //     await this.apiService.put("/" + updateItemDto.id, updateItemDto, {
-  //       headers: { 'If-Match': etag }
-  //     });
-  //   } else {
-  //     await this.apiService.put("/" + updateItemDto.id, updateItemDto);
-  //   }
-  //   await this.getItems();
-
-  // }
 
   async updateItem(updateItemDto: any) {
     const etag = this.etagMap.get(updateItemDto.id);
-    console.log('frontend etag:    ', etag);
     const customHeaders = etag ? { 'If-Match': etag } : {};
     await this.apiService.put("/" + updateItemDto.id, updateItemDto, customHeaders);
     await this.getItems();

@@ -53,6 +53,7 @@ export class ItemComponent {
       done: this.item.done
     };
     await this.itemService.updateItem(updateItemDto);
+    this.item.description = updateItemDto.description;
   }
 
   async cancel() {
