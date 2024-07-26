@@ -1,29 +1,29 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { FetchInterceptorService } from './fetch-interceptor.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class APIService {
   private apiUrl = "http://localhost:3000/items";
+  private fetchInterceptorService: FetchInterceptorService = inject(FetchInterceptorService);
 
-  async fetchData(url: string, method: string = 'GET', body: any = null, customHeaders: any = {}): Promise<any> {
-    const headers = new Headers({
-      'Content-Type': 'application/json',
-      ...customHeaders,
-    });
-
+  async fetchData(url: string, method: string = 'GET', body: any = null, headers: any = {}): Promise<any> {
     const options: RequestInit = {
       method,
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers
+      },
       body: body ? JSON.stringify(body) : null,
     };
 
-    const response = await fetch(`${this.apiUrl}${url}`, options);
-
-    const responseBody = await response.json();
-    const responseHeaders = this.parseHeaders(response.headers);
-
-    return { body: responseBody, headers: responseHeaders };
+    const response = await this.fetchInterceptorService.intercept(`${this.apiUrl}${url}`, options);
+    const data = await response.json();
+    return {
+      headers: response.headers,
+      body: data
+    };
   }
 
   async get(url: string): Promise<any> {
@@ -34,19 +34,11 @@ export class APIService {
     return this.fetchData(url, 'POST', body);
   }
 
-  async put(url: string, body: any, customHeaders: any = {}): Promise<any> {
-    return this.fetchData(url, 'PUT', body, customHeaders);
+  async put(url: string, body: any, headers: any = {}): Promise<any> {
+    return this.fetchData(url, 'PUT', body, headers);
   }
 
   async delete(url: string): Promise<any> {
     return this.fetchData(url, 'DELETE');
-  }
-
-  private parseHeaders(headers: Headers): any {
-    const headerObj: any = {};
-    headers.forEach((value, key) => {
-      headerObj[key] = value;
-    });
-    return headerObj;
   }
 }

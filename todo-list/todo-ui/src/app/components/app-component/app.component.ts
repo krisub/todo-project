@@ -27,9 +27,14 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (!this.browserRefresh) {
-      this.itemService.getItems();
+      const allItems = await this.itemService.getItems();
+
+      for (const item of allItems) {
+        this.itemService.getItem(item);
+      }
+
     }
   }
 
