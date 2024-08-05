@@ -18,7 +18,8 @@ export class APIService {
       body: body ? JSON.stringify(body) : null,
     };
 
-    const response = await this.fetchInterceptorService.intercept(`${this.apiUrl}${url}`, options);
+    const requestAction = (url: string, options: RequestInit = {}) => fetch(url, options);
+    const response = await this.fetchInterceptorService.intercept(`${this.apiUrl}${url}`, options, requestAction);
     const data = await response.json();
     return {
       headers: response.headers,

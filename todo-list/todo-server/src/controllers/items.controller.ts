@@ -8,83 +8,63 @@ import { Response } from 'express';
 
 @Controller('items')
 export class ItemsController {
-    constructor(private readonly itemsService: ItemsService) { }
-    
-    @Get()
-    getAllItems(@Res() res: Response): void {
-        const items = this.itemsService.getAllItems();
-        res.setHeader('ETag', etag(JSON.stringify(items)));
-        res.send(items);
+  constructor(private readonly itemsService: ItemsService) {}
+
+  @Get()
+  async getAllItems(@Res() res: Response): Promise<void> {
+    const items = await this.itemsService.getAllItems();
+    res.setHeader('ETag', etag(JSON.stringify(items)));
+    res.send(items);
+  }
+
+  @Post()
+  async createItem(@Body() createItemDto: CreateItemDto, @Res() res: Response): Promise<void> {
+    const item = await this.itemsService.createItem(createItemDto.description);
+    res.set('ETag', etag(JSON.stringify(item)));
+    res.json(item);
+  }
+
+  @Put(':id')
+  async updateItem(
+    @Param('id') id: string,
+    @Body() updateItemDto: UpdateItemDto,
+    @Headers('If-Match') ifMatch: string,
+    @Res() res: Response
+  ): Promise<void> {
+    const item = await this.itemsService.getItem(+id);
+    if (!item) {
+      throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
     }
 
-    @Post()
-    createItem(@Body() createItemDto: CreateItemDto, @Res() res: Response): void {
-        const item = this.itemsService.createItem(createItemDto);
-        res.set('ETag', etag(JSON.stringify(item)));
-        res.json(item);
+    const currentEtag = etag(JSON.stringify(item));
+    if (ifMatch !== currentEtag) {
+      throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED);
     }
 
-    // @Put(':id')
-    // updateItem(@Param('id') id: string, @Body() updateItemDto: UpdateItemDto): Item {
-    //     return this.itemsService.updateItem(updateItemDto);
-    // }
+    const updatedItem = await this.itemsService.updateItem(+id, updateItemDto.description);
+    res.set('ETag', etag(JSON.stringify(updatedItem)));
+    res.json(updatedItem);
+  }
 
-    @Put(':id')
-    updateItem(@Param('id') id: string,
-        @Body() updateItemDto: UpdateItemDto,
-        @Headers('If-Match') ifMatch: string,
-        @Res() res: Response): void {
-        
-        const item = this.itemsService.getItem(+id);
-        if (!item) {
-            throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
-        }
-
-        const currentEtag = etag(JSON.stringify(item));
-        console.log('item')
-        console.log(ifMatch);
-        console.log(currentEtag);
-        console.log('-----')
-        if (ifMatch !== currentEtag) {
-            throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED);
-        }
-
-        const updatedItem = this.itemsService.updateItem(updateItemDto);
-        res.set('ETag', etag(JSON.stringify(updatedItem)));
-        res.json(updatedItem);
+  @Get(':id')
+  async getItem(@Param('id') id: string, @Res() res: Response): Promise<void> {
+    const item = await this.itemsService.getItem(+id);
+    if (!item) {
+      throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
     }
 
-    // @Get(':id')
-    // getItem(@Param('id') id: string): Item {
-    //     return this.itemsService.getItem(+id);
-    // }
-    @Get(':id')
-    getItem(@Param('id') id: string, @Res() res: Response): void {
-        const item = this.itemsService.getItem(+id);
+    const etagValue = etag(JSON.stringify(item));
+    res.setHeader('ETag', etagValue);
+    res.send(item);
+  }
 
-        if (!item) {
-            throw new HttpException('Item not found', HttpStatus.NOT_FOUND);
-        }
+  @Post(':id')
+  async deleteItem(@Param('id') id: string): Promise<Item | null> {
+    return this.itemsService.deleteItem(+id);
+  }
 
-        const etagValue = etag(JSON.stringify(item));
-        // console.log(etagValue);
-        res.setHeader('ETag', etagValue);
-        res.send(item);
-    }
-
-    @Post(':id')
-    deleteItem(@Param('id') id: string): Item {
-        return this.itemsService.deleteItem(+id);
-    }
-    
-    @Delete('clear')
-    clearItems(): void {
-        this.itemsService.clearItems();
-    }
-
-    // @Get('currentId')
-    // getCurrentId(): number {
-    //     return this.itemsService.getCurrentId();
-    // }
-
+  @Delete('clear')
+  async clearItems(): Promise<void> {
+    await this.itemsService.clearItems();
+  }
 }

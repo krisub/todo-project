@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@mikro-orm/core": "^6.3.1",
+    "@mikro-orm/mysql": "^6.3.1",
+    "mysql2": "^3.10.3"
+  }
+}

@@ -1,5 +1,13 @@
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+
+@Entity()
 export class Item {
-  description: string;
-  done: boolean;
-  id: number;
+  @PrimaryKey()
+  id!: number;
+
+  @Property()
+  description!: string;
+
+  @Property()
+  done!: boolean;
 }
