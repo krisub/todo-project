@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChange
 import { CommonModule } from "@angular/common";
 import { ItemService } from "../../data-services/item.service";
 import { Item } from "../../item";
-import { FormGroup, FormControl, Validators, ReactiveFormsModule} from "@angular/forms";
+import { FormGroup, FormControl, ReactiveFormsModule} from "@angular/forms";
 
 
 @Component({

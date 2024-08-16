@@ -20,9 +20,9 @@ export class FetchInterceptorService {
       }
     }
 
+    console.log(options)
     const response = await next(url, options);
 
-    // Update the ETag map for specific GET requests
     if (options.method === 'GET' && url.includes('/items/')) {
       const responseEtag = response.headers.get('ETag');
       if (responseEtag) {

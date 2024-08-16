@@ -1,17 +1,13 @@
-import { MikroORM } from '@mikro-orm/mysql';
 import { NestFactory } from '@nestjs/core';
 import { ItemsModule } from './modules/items.module';
-import mikroOrmConfig from './mikro-orm.config';
 
 async function bootstrap() {
-  // Initialize MikroORM
-  const orm = await MikroORM.init(mikroOrmConfig);
-
   const app = await NestFactory.create(ItemsModule);
 
-  app.use(async (req, res, next) => {
-    req['orm'] = orm;
-    next();
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   });
 
   await app.listen(3000);

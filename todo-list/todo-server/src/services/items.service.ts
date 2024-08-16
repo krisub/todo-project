@@ -1,52 +1,59 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { MikroORM, EntityManager } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/mysql';
 import { Item } from '../entities/items.entity';
+import { GenericService } from './generic.service';
 
 @Injectable()
-export class ItemsService {
-  private em: EntityManager;
+export class ItemsService extends GenericService<Item, 'id'> {
+  private idCounter: number = 0;
 
   constructor(
-    @Inject('MikroORM') private readonly orm: MikroORM,
+    em: EntityManager,
   ) {
-    this.em = orm.em;
+    super(em.getRepository(Item));
   }
 
   async getAllItems(): Promise<Item[]> {
-    return this.em.find(Item, {});
+    return this.getAll();
   }
 
   async getItem(id: number): Promise<Item | null> {
-    return this.em.findOne(Item, id);
+    return this.getOne(id);
   }
 
   async createItem(description: string): Promise<Item> {
-    const item = this.em.create(Item, { description });
-    await this.em.persistAndFlush(item);
-    return item;
+    return this.create({ description, done: false, id: this.idCounter++ });
   }
 
-  async updateItem(id: number, description: string): Promise<Item | null> {
-    const item = await this.em.findOne(Item, id);
+  async updateItem(id: number, description: string, done: boolean): Promise<Item | null> {
+    // return this.update(id, { description }, { done });
+    /*
+    const entity = await this.er.findOne(id);
+        if (entity) {
+            Object.assign(entity, data);
+            await this.entityManager.persistAndFlush(entity);
+        }
+        return entity;
+    */
+    const item = await this.getOne(id);
     if (item) {
       item.description = description;
-      await this.em.persistAndFlush(item);
+      item.done = done;
+      await this.entityManager.persistAndFlush(item);
     }
     return item;
   }
 
   async deleteItem(id: number): Promise<Item | null> {
-    const item = await this.em.findOne(Item, id);
-    if (item) {
-      await this.em.removeAndFlush(item);
-    }
-    return item;
+    return this.delete(id);
   }
 
   async clearItems(): Promise<void> {
-    await this.em.nativeDelete(Item, {});
+    this.idCounter = 0;
+    return this.clear();
   }
 }
+
 
 
 // import { CreateItemDto } from '../item-dtos/create-item.dto';

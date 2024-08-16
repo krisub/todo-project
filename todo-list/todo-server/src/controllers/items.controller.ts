@@ -41,7 +41,7 @@ export class ItemsController {
       throw new HttpException('ETag mismatch', HttpStatus.PRECONDITION_FAILED);
     }
 
-    const updatedItem = await this.itemsService.updateItem(+id, updateItemDto.description);
+    const updatedItem = await this.itemsService.updateItem(+id, updateItemDto.description, updateItemDto.done);
     res.set('ETag', etag(JSON.stringify(updatedItem)));
     res.json(updatedItem);
   }
