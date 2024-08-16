@@ -26,15 +26,6 @@ export class ItemsService extends GenericService<Item, 'id'> {
   }
 
   async updateItem(id: number, description: string, done: boolean): Promise<Item | null> {
-    // return this.update(id, { description }, { done });
-    /*
-    const entity = await this.er.findOne(id);
-        if (entity) {
-            Object.assign(entity, data);
-            await this.entityManager.persistAndFlush(entity);
-        }
-        return entity;
-    */
     const item = await this.getOne(id);
     if (item) {
       item.description = description;

@@ -10,4 +10,7 @@ export class Item {
 
   @Property()
   done!: boolean;
+
+  @Property({ version: true })
+  version!: number;
 }
